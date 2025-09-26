@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Chat, LLMModel, Message } from '@/lib/types';
 // Removed direct database imports - using API calls instead
 import { Copy, Send, Plus, X, PanelRight, LayoutGrid } from 'lucide-react';
+import { Rows, RowsPlusTop, RowsPlusBottom } from '@phosphor-icons/react';
 import ModelSelector from './ModelSelector';
 import OutputColumn from './OutputColumn';
 
@@ -282,20 +283,35 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
             
             {/* Density Toggle */}
             <div className="flex items-center border border-input rounded">
-              {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setDensityMode(mode)}
-                  className={`px-2 py-1 text-xs font-medium transition-colors ${
-                    densityMode === mode
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-accent'
-                  } ${mode === 'compact' ? 'rounded-l' : mode === 'spacious' ? 'rounded-r' : ''}`}
-                  title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} density`}
-                >
-                  {mode.charAt(0).toUpperCase()}
-                </button>
-              ))}
+              {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map((mode) => {
+                const getIcon = () => {
+                  switch (mode) {
+                    case 'compact':
+                      return <Rows className="w-4 h-4" />;
+                    case 'comfortable':
+                      return <RowsPlusTop className="w-4 h-4" />;
+                    case 'spacious':
+                      return <RowsPlusBottom className="w-4 h-4" />;
+                    default:
+                      return <RowsPlusTop className="w-4 h-4" />;
+                  }
+                };
+                
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setDensityMode(mode)}
+                    className={`px-2 py-1 text-xs font-medium transition-colors ${
+                      densityMode === mode
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-accent'
+                    } ${mode === 'compact' ? 'rounded-l' : mode === 'spacious' ? 'rounded-r' : ''}`}
+                    title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} density`}
+                  >
+                    {getIcon()}
+                  </button>
+                );
+              })}
             </div>
             
             <button

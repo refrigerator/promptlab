@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { LLMModel } from '@/lib/types';
-import { ChevronDown, Search, Zap, Brain, Sparkles, Cpu, Bot } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
+import { Lightning, Brain, Sparkle, Cpu, Robot, GoogleLogo, MicrosoftTeamsLogo, AmazonLogo, TwitterLogo } from '@phosphor-icons/react';
 
 interface ModelSelectorProps {
   models: LLMModel[];
@@ -55,28 +56,28 @@ const getProviderFromName = (name: string): string => {
 // Get provider icon
 const getProviderIcon = (provider: string) => {
   const lowerProvider = provider.toLowerCase();
-  if (lowerProvider.includes('openai') || lowerProvider.includes('gpt')) return <Zap className="w-4 h-4" />;
+  if (lowerProvider.includes('openai') || lowerProvider.includes('gpt')) return <Lightning className="w-4 h-4" />;
   if (lowerProvider.includes('anthropic') || lowerProvider.includes('claude')) return <Brain className="w-4 h-4" />;
-  if (lowerProvider.includes('google') || lowerProvider.includes('gemini')) return <Sparkles className="w-4 h-4" />;
+  if (lowerProvider.includes('google') || lowerProvider.includes('gemini')) return <GoogleLogo className="w-4 h-4" />;
   if (lowerProvider.includes('meta') || lowerProvider.includes('llama')) return <Cpu className="w-4 h-4" />;
-  if (lowerProvider.includes('ai21') || lowerProvider.includes('jamba')) return <Bot className="w-4 h-4" />;
-  if (lowerProvider.includes('cohere')) return <Zap className="w-4 h-4" />;
-  if (lowerProvider.includes('mistral')) return <Sparkles className="w-4 h-4" />;
+  if (lowerProvider.includes('ai21') || lowerProvider.includes('jamba')) return <Robot className="w-4 h-4" />;
+  if (lowerProvider.includes('cohere')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('mistral')) return <Sparkle className="w-4 h-4" />;
   if (lowerProvider.includes('deepseek')) return <Cpu className="w-4 h-4" />;
-  if (lowerProvider.includes('qwen')) return <Bot className="w-4 h-4" />;
+  if (lowerProvider.includes('qwen')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('agentica')) return <Brain className="w-4 h-4" />;
-  if (lowerProvider.includes('aionlabs')) return <Zap className="w-4 h-4" />;
-  if (lowerProvider.includes('microsoft')) return <Cpu className="w-4 h-4" />;
-  if (lowerProvider.includes('amazon') || lowerProvider.includes('titan')) return <Sparkles className="w-4 h-4" />;
-  if (lowerProvider.includes('hugging face') || lowerProvider.includes('hf')) return <Bot className="w-4 h-4" />;
+  if (lowerProvider.includes('aionlabs')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('microsoft')) return <MicrosoftTeamsLogo className="w-4 h-4" />;
+  if (lowerProvider.includes('amazon') || lowerProvider.includes('titan')) return <AmazonLogo className="w-4 h-4" />;
+  if (lowerProvider.includes('hugging face') || lowerProvider.includes('hf')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('alfredpros')) return <Cpu className="w-4 h-4" />;
   if (lowerProvider.includes('allenai') || lowerProvider.includes('olmo') || lowerProvider.includes('molmo')) return <Brain className="w-4 h-4" />;
-  if (lowerProvider.includes('stability') || lowerProvider.includes('stable')) return <Sparkles className="w-4 h-4" />;
-  if (lowerProvider.includes('eleutherai') || lowerProvider.includes('gpt-j') || lowerProvider.includes('gpt-neox')) return <Zap className="w-4 h-4" />;
-  if (lowerProvider.includes('bigscience') || lowerProvider.includes('bloom')) return <Bot className="w-4 h-4" />;
+  if (lowerProvider.includes('stability') || lowerProvider.includes('stable')) return <Sparkle className="w-4 h-4" />;
+  if (lowerProvider.includes('eleutherai') || lowerProvider.includes('gpt-j') || lowerProvider.includes('gpt-neox')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('bigscience') || lowerProvider.includes('bloom')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('together') || lowerProvider.includes('redpajama')) return <Cpu className="w-4 h-4" />;
-  if (lowerProvider.includes('x') || lowerProvider.includes('twitter') || lowerProvider.includes('grok')) return <Zap className="w-4 h-4" />;
-  return <Zap className="w-4 h-4" />;
+  if (lowerProvider.includes('x') || lowerProvider.includes('twitter') || lowerProvider.includes('grok')) return <TwitterLogo className="w-4 h-4" />;
+  return <Lightning className="w-4 h-4" />;
 };
 
 // Group models by provider
@@ -150,7 +151,7 @@ export default function ModelSelector({ models, selectedModels, onAddModel }: Mo
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm border border-input rounded bg-background hover:bg-accent transition-colors"
       >
-        <Zap className="w-4 h-4" />
+        <Lightning className="w-4 h-4" />
         <span>Add Model</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
