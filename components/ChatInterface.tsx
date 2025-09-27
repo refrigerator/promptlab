@@ -7,6 +7,8 @@ import { Copy, Send, Plus, X, PanelRight, LayoutGrid } from 'lucide-react';
 import { Rows, RowsPlusTop, RowsPlusBottom } from '@phosphor-icons/react';
 import ModelSelector from './ModelSelector';
 import OutputColumn from './OutputColumn';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Input } from '@/components/ui/input';
 
 interface ChatInterfaceProps {
   chat: Chat | null;
@@ -282,7 +284,7 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
             />
             
             {/* Density Toggle */}
-            <div className="flex items-center border border-input rounded">
+            <ToggleGroup type="single" value={densityMode} onValueChange={(value) => value && setDensityMode(value as DensityMode)}>
               {(['compact', 'comfortable', 'spacious'] as DensityMode[]).map((mode) => {
                 const getIcon = () => {
                   switch (mode) {
@@ -298,21 +300,17 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
                 };
                 
                 return (
-                  <button
+                  <ToggleGroupItem
                     key={mode}
-                    onClick={() => setDensityMode(mode)}
-                    className={`px-2 py-1 text-xs font-medium transition-colors ${
-                      densityMode === mode
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-accent'
-                    } ${mode === 'compact' ? 'rounded-l' : mode === 'spacious' ? 'rounded-r' : ''}`}
+                    value={mode}
+                    className="px-2 py-1"
                     title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} density`}
                   >
                     {getIcon()}
-                  </button>
+                  </ToggleGroupItem>
                 );
               })}
-            </div>
+            </ToggleGroup>
             
             <button
               onClick={() => setIsDrawerOpen(!isDrawerOpen)}
@@ -336,7 +334,7 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
               <div key={model.id} className="flex items-center gap-2 p-2 bg-accent rounded">
                 <span className="text-sm font-medium">{model.name}</span>
                 <div className="flex items-center gap-1">
-                  <input
+                  <Input
                     type="number"
                     min="0"
                     max="2"
@@ -346,10 +344,10 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
                       ...modelParams[model.id],
                       temperature: parseFloat(e.target.value) || 0.7
                     })}
-                    className="w-16 px-1 py-0.5 text-xs border border-input rounded bg-background"
+                    className="w-16 h-6 text-xs"
                     placeholder="Temp"
                   />
-                  <input
+                  <Input
                     type="number"
                     min="1"
                     max="4000"
@@ -358,7 +356,7 @@ export default function ChatInterface({ chat, llmModels, onChatUpdate }: ChatInt
                       ...modelParams[model.id],
                       max_tokens: parseInt(e.target.value) || 1000
                     })}
-                    className="w-16 px-1 py-0.5 text-xs border border-input rounded bg-background"
+                    className="w-16 h-6 text-xs"
                     placeholder="Tokens"
                   />
                 </div>

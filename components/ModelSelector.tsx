@@ -1,9 +1,24 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
 import { LLMModel } from '@/lib/types';
-import { ChevronDown, Search } from 'lucide-react';
-import { Lightning, Brain, Sparkle, Cpu, Robot, GoogleLogo, MicrosoftTeamsLogo, AmazonLogo, TwitterLogo } from '@phosphor-icons/react';
+import { Check, ChevronsUpDown, Zap } from 'lucide-react';
+import { Lightning as PhosphorLightning, Brain, Sparkle, Cpu, Robot, GoogleLogo, MicrosoftTeamsLogo, AmazonLogo, TwitterLogo } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface ModelSelectorProps {
   models: LLMModel[];
@@ -56,28 +71,28 @@ const getProviderFromName = (name: string): string => {
 // Get provider icon
 const getProviderIcon = (provider: string) => {
   const lowerProvider = provider.toLowerCase();
-  if (lowerProvider.includes('openai') || lowerProvider.includes('gpt')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('openai') || lowerProvider.includes('gpt')) return <PhosphorLightning className="w-4 h-4" />;
   if (lowerProvider.includes('anthropic') || lowerProvider.includes('claude')) return <Brain className="w-4 h-4" />;
   if (lowerProvider.includes('google') || lowerProvider.includes('gemini')) return <GoogleLogo className="w-4 h-4" />;
   if (lowerProvider.includes('meta') || lowerProvider.includes('llama')) return <Cpu className="w-4 h-4" />;
   if (lowerProvider.includes('ai21') || lowerProvider.includes('jamba')) return <Robot className="w-4 h-4" />;
-  if (lowerProvider.includes('cohere')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('cohere')) return <PhosphorLightning className="w-4 h-4" />;
   if (lowerProvider.includes('mistral')) return <Sparkle className="w-4 h-4" />;
   if (lowerProvider.includes('deepseek')) return <Cpu className="w-4 h-4" />;
   if (lowerProvider.includes('qwen')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('agentica')) return <Brain className="w-4 h-4" />;
-  if (lowerProvider.includes('aionlabs')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('aionlabs')) return <PhosphorLightning className="w-4 h-4" />;
   if (lowerProvider.includes('microsoft')) return <MicrosoftTeamsLogo className="w-4 h-4" />;
   if (lowerProvider.includes('amazon') || lowerProvider.includes('titan')) return <AmazonLogo className="w-4 h-4" />;
   if (lowerProvider.includes('hugging face') || lowerProvider.includes('hf')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('alfredpros')) return <Cpu className="w-4 h-4" />;
   if (lowerProvider.includes('allenai') || lowerProvider.includes('olmo') || lowerProvider.includes('molmo')) return <Brain className="w-4 h-4" />;
   if (lowerProvider.includes('stability') || lowerProvider.includes('stable')) return <Sparkle className="w-4 h-4" />;
-  if (lowerProvider.includes('eleutherai') || lowerProvider.includes('gpt-j') || lowerProvider.includes('gpt-neox')) return <Lightning className="w-4 h-4" />;
+  if (lowerProvider.includes('eleutherai') || lowerProvider.includes('gpt-j') || lowerProvider.includes('gpt-neox')) return <PhosphorLightning className="w-4 h-4" />;
   if (lowerProvider.includes('bigscience') || lowerProvider.includes('bloom')) return <Robot className="w-4 h-4" />;
   if (lowerProvider.includes('together') || lowerProvider.includes('redpajama')) return <Cpu className="w-4 h-4" />;
   if (lowerProvider.includes('x') || lowerProvider.includes('twitter') || lowerProvider.includes('grok')) return <TwitterLogo className="w-4 h-4" />;
-  return <Lightning className="w-4 h-4" />;
+  return <PhosphorLightning className="w-4 h-4" />;
 };
 
 // Group models by provider
@@ -112,98 +127,69 @@ const groupModelsByProvider = (models: LLMModel[]) => {
 };
 
 export default function ModelSelector({ models, selectedModels, onAddModel }: ModelSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = React.useState(false);
   
   const selectedModelIds = new Set(selectedModels.map(m => m.id));
   const availableModels = models.filter(model => !selectedModelIds.has(model.id));
   const groupedModels = groupModelsByProvider(availableModels);
   
-  const filteredGroups = groupedModels.map(([provider, providerModels]) => [
-    provider,
-    providerModels.filter(model => 
-      model.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  ]).filter(([, models]) => models.length > 0);
-  
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  
   const handleModelSelect = (model: LLMModel) => {
     onAddModel(model);
-    setIsOpen(false);
-    setSearchTerm('');
+    setOpen(false);
   };
   
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm border border-input rounded bg-background hover:bg-accent transition-colors"
-      >
-        <Lightning className="w-4 h-4" />
-        <span>Add Model</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-80 overflow-hidden w-96">
-          <div className="p-2 border-b border-border">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search models..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 text-sm border border-input rounded bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                autoFocus
-              />
-            </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            <span>Add Model</span>
           </div>
-          
-          <div className="overflow-y-auto max-h-64">
-            {filteredGroups.length === 0 ? (
-              <div className="p-3 text-sm text-muted-foreground text-center">
-                {searchTerm ? 'No models found' : 'No models available'}
-              </div>
-            ) : (
-              filteredGroups.map(([provider, providerModels]) => (
-                <div key={provider} className="border-b border-border last:border-b-0">
-                  <div className="px-3 py-2 bg-muted/50 text-xs font-medium text-muted-foreground flex items-center gap-2">
-                    {getProviderIcon(provider)}
-                    {provider} ({providerModels.length})
-                  </div>
-                  {providerModels.map((model) => (
-                    <button
-                      key={model.id}
-                      onClick={() => handleModelSelect(model)}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-accent transition-colors flex items-center justify-between"
-                    >
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0">
+        <Command>
+          <CommandInput placeholder="Search models..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No models found.</CommandEmpty>
+            {groupedModels.map(([provider, providerModels]) => (
+              <CommandGroup key={provider} heading={provider}>
+                {providerModels.map((model) => (
+                  <CommandItem
+                    key={model.id}
+                    value={model.name}
+                    onSelect={() => handleModelSelect(model)}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {getProviderIcon(provider)}
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{model.name}</div>
                         <div className="text-xs text-muted-foreground">
                           {model.context_length ? `${model.context_length.toLocaleString()} context` : 'Unknown context'}
                         </div>
                       </div>
-                    </button>
-                  ))}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+                    </div>
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        selectedModelIds.has(model.id) ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
